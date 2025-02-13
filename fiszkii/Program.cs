@@ -73,7 +73,7 @@ namespace Fiszki
                 }
             }
         }
-    }
+    } 
 
     class Fiszka
     {

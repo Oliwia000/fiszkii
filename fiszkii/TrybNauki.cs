@@ -63,12 +63,12 @@ namespace Fiszki
 
                 if (poprawneOdpowiedzi.Any(o => o.ToLower() == odpowiedz))
                 {
-                    Console.WriteLine("✅ Dobrze!");
+                    Console.WriteLine("Dobrze!");
                     score++;
                 }
                 else
                 {
-                    Console.WriteLine($"❌ Błąd! Poprawna odpowiedź: {string.Join(", ", poprawneOdpowiedzi)}");
+                    Console.WriteLine($"Błąd! Poprawna odpowiedź: {string.Join(", ", poprawneOdpowiedzi)}");
                 }
 
                 Console.WriteLine("Naciśnij Enter, aby przejść dalej...");

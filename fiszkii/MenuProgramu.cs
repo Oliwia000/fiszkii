@@ -1,34 +1,36 @@
 ﻿using System;
 
-namespace fiszkii
+namespace Fiszki
 {
-    public class MenuProgramu
+    public static class MenuProgram
     {
-        public void Uruchom()
+        public static void Uruchom()
         {
-            ZarzadzanieFiszkami.WczytajFiszki();
+            // Wczytanie fiszek z pliku (plik zostanie utworzony, jeśli nie istnieje)
+            ZarzadzanieFiszkami.LoadFlashcards();
 
             bool kontynuuj = true;
             while (kontynuuj)
             {
                 Console.Clear();
-                Console.WriteLine("Menu:");
+                Console.WriteLine("==== MENU ====");
                 Console.WriteLine("1. Pokaż fiszki");
                 Console.WriteLine("2. Dodaj fiszkę");
                 Console.WriteLine("3. Rozpocznij naukę");
                 Console.WriteLine("4. Wyjdź");
+                Console.Write("Wybierz opcję: ");
                 string wybor = Console.ReadLine();
 
                 switch (wybor)
                 {
                     case "1":
-                        ZarzadzanieFiszkami.WyswietlFiszki();
+                        ZarzadzanieFiszkami.DisplayFlashcards();
                         break;
                     case "2":
-                        ZarzadzanieFiszkami.DodajFiszke();
+                        ZarzadzanieFiszkami.AddFlashcard();
                         break;
                     case "3":
-                        TrybNauki.RozpocznijNauke();
+                        TrybNauki.StartTraining();
                         break;
                     case "4":
                         kontynuuj = false;

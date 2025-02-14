@@ -6,8 +6,7 @@ namespace Fiszki
     {
         public static void Uruchom()
         {
-            // Wczytanie fiszek z pliku (plik zostanie utworzony, jeśli nie istnieje)
-            ZarzadzanieFiszkami.LoadFlashcards();
+            ZarzadzanieFiszkami.LoadFlashcards();      // Wczytanie fiszek z pliku(plik zostanie utworzony, jeśli nie istnieje)
 
             bool kontynuuj = true;
             while (kontynuuj)

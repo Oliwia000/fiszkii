@@ -27,7 +27,7 @@ namespace Fiszki
                 : ZarzadzanieFiszkami.Lang2Name + " -> " + ZarzadzanieFiszkami.Lang1Name;
            
             Console.WriteLine("\nWybierz tryb trudności:");   // Wybór poziomu trudności
-            Console.WriteLine("1. Łatwy (jedna próba, podpowiedź po nieudanej próbie)");
+            Console.WriteLine("1. Łatwy (podpowiedź,jeszcze jedna próba)");
             Console.WriteLine("2. Trudny (wymagane podanie wszystkich tłumaczeń)");
             Console.Write("Wybór (1 lub 2): ");
             string trybInput = Console.ReadLine();
@@ -105,7 +105,7 @@ namespace Fiszki
                     }
                     else
                     {
-                        Console.WriteLine("Źle! Poprawne odpowiedzi: " + string.Join(", ", correctAnswers));
+                        Console.WriteLine(" Zle! Poprawne odpowiedzi: " + string.Join(", ", correctAnswers));
                     } }
                 Console.WriteLine("\nNaciśnij Enter, aby przejść do następnej fiszki...");
                 Console.ReadLine();

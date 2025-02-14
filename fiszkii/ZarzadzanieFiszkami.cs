@@ -7,8 +7,8 @@ namespace Fiszki
 {
     public static class ZarzadzanieFiszkami
     {
-        public static List<Fiszka> Fiszki = new List<Fiszka>();
-        // Nazwy języków – pobierane z pierwszej linii pliku
+        public static List<Fiszka> Fiszki = new List<Fiszka>();  // Nazwy języków – pobierane z pierwszej linii pliku
+
         public static string Lang1Name = "PL";
         public static string Lang2Name = "ENG";
         private static string filePath = "fiszki.txt";
@@ -18,27 +18,8 @@ namespace Fiszki
             Fiszki.Clear();
             if (!File.Exists(filePath))
             {
-                // Jeśli plik nie istnieje, tworzymy go z nagłówkiem oraz przykładowymi fiszkami
                 List<string> linesToWrite = new List<string>();
                 linesToWrite.Add("PL - ENG"); // nagłówek
-
-                // Przykładowa fiszka 1:
-                linesToWrite.Add("jabłko");                         // słowo
-                linesToWrite.Add("Owoc czerwony, słodki");           // opis
-                linesToWrite.Add("łatwy");                           // poziom
-                linesToWrite.Add("apple");                           // tłumaczenie
-
-                // Przykładowa fiszka 2:
-                linesToWrite.Add("samochód");
-                linesToWrite.Add("Pojazd czterokołowy");
-                linesToWrite.Add("trudny");
-                linesToWrite.Add("car, automobile");
-
-                // Przykładowa fiszka 3:
-                linesToWrite.Add("Czyny mówią głośniej niż słowa");
-                linesToWrite.Add("Przysłowie motywacyjne");
-                linesToWrite.Add("łatwy");
-                linesToWrite.Add("Actions speak louder than words");
 
                 File.WriteAllLines(filePath, linesToWrite);
             }
@@ -53,11 +34,10 @@ namespace Fiszki
                     Lang2Name = langs[1].Trim();
                 }
             }
-            // Każda fiszka zajmuje 4 linie, zaczynając od indeksu 1
-            for (int i = 1; i < lines.Length; i += 4)
+            for (int i = 1; i < lines.Length; i += 4)   // fiszka zajmuje 4 linie
             {
                 if (i + 3 >= lines.Length)
-                    break; // niekompletny wpis
+                    break; 
 
                 string slowo = lines[i].Trim();
                 string opis = lines[i + 1].Trim();
@@ -67,7 +47,6 @@ namespace Fiszki
                 Fiszka card = new Fiszka
                 {
                     WersjeJezyka1 = new List<string> { slowo },
-                    // Jeśli jest więcej niż jedno tłumaczenie, rozdzielamy je przecinkiem
                     WersjeJezyka2 = tlumaczenie.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
                                                .Select(s => s.Trim()).ToList(),
                     Opis = opis,
@@ -76,7 +55,6 @@ namespace Fiszki
                 Fiszki.Add(card);
             }
         }
-
         public static void DisplayFlashcards()
         {
             Console.Clear();
@@ -94,8 +72,6 @@ namespace Fiszki
             Console.WriteLine("Naciśnij Enter, aby wrócić do menu...");
             Console.ReadLine();
         }
-
-        // Metoda AddFlashcard() z dodanym sprawdzaniem pustych pól
         public static void AddFlashcard()
         {
             Console.Clear();
@@ -113,7 +89,7 @@ namespace Fiszki
             Console.Write("Podaj tłumaczenie (w przypadku wielu tłumaczeń oddziel przecinkami): ");
             string tlumaczenie = Console.ReadLine().Trim();
 
-            // Sprawdzamy, czy żadne pole nie jest puste
+                // Sprawdzamy, czy żadne pole nie jest puste
             if (string.IsNullOrWhiteSpace(slowo) ||
                 string.IsNullOrWhiteSpace(opis) ||
                 string.IsNullOrWhiteSpace(poziom) ||
@@ -124,15 +100,13 @@ namespace Fiszki
                 Console.ReadLine();
                 return;
             }
-
-            // Zapisujemy nową fiszkę w pliku w formacie 4-liniowym
+            //nowa fiszka w pliku w formacie 4-liniowym
             string flashcardData = slowo + Environment.NewLine +
                                    opis + Environment.NewLine +
                                    poziom + Environment.NewLine +
                                    tlumaczenie + Environment.NewLine;
             File.AppendAllText(filePath, flashcardData);
 
-            // Dodajemy fiszkę do listy
             Fiszka nowaFiszka = new Fiszka
             {
                 WersjeJezyka1 = new List<string> { slowo },
@@ -142,9 +116,7 @@ namespace Fiszki
                 Poziom = poziom
             };
             Fiszki.Add(nowaFiszka);
-
             Console.WriteLine("Fiszka dodana! Naciśnij Enter, aby kontynuować...");
             Console.ReadLine();
         }
-    }
-}
+    }}

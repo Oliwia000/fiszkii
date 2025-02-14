@@ -8,76 +8,114 @@ namespace Fiszki
     {
         public static void StartTraining()
         {
-            var fiszki = ZarzadzanieFiszkami.Fiszki;
-            if (fiszki.Count == 0)
+            if (ZarzadzanieFiszkami.Fiszki.Count == 0)
             {
-                Console.WriteLine("Brak fiszek.");
+                Console.WriteLine("Brak fiszek do nauki. Najpierw dodaj kilka fiszek.");
+                Console.ReadLine();
                 return;
             }
+            Console.Clear();
+            Console.WriteLine("==== Tryb nauki ====");
 
             Console.WriteLine("Wybierz kierunek nauki:");
-            Console.WriteLine("1. PL -> ENG");
-            Console.WriteLine("2. ENG -> PL");
-            int wybor = int.Parse(Console.ReadLine());
-            bool fromLang1 = wybor == 1;
+            Console.WriteLine("1. " + ZarzadzanieFiszkami.Lang1Name + " -> " + ZarzadzanieFiszkami.Lang2Name);
+            Console.WriteLine("2. " + ZarzadzanieFiszkami.Lang2Name + " -> " + ZarzadzanieFiszkami.Lang1Name);
+            Console.Write("Wybór (1 lub 2): ");
+            string kierunekInput = Console.ReadLine();
+            string kierunek = (kierunekInput == "1")
+                ? ZarzadzanieFiszkami.Lang1Name + " -> " + ZarzadzanieFiszkami.Lang2Name
+                : ZarzadzanieFiszkami.Lang2Name + " -> " + ZarzadzanieFiszkami.Lang1Name;
+           
+            Console.WriteLine("\nWybierz tryb trudności:");   // Wybór poziomu trudności
+            Console.WriteLine("1. Łatwy (jedna próba, podpowiedź po nieudanej próbie)");
+            Console.WriteLine("2. Trudny (wymagane podanie wszystkich tłumaczeń)");
+            Console.Write("Wybór (1 lub 2): ");
+            string trybInput = Console.ReadLine();
+            bool isEasy = (trybInput == "1");
 
-            Console.WriteLine("\nWybierz tryb:");
-            Console.WriteLine("1. Łatwy (podpowiedzi)");
-            Console.WriteLine("2. Trudny (wszystkie odpowiedzi muszą być poprawne)");
-            bool isEasy = Console.ReadLine() == "1";
+            List<Fiszka> filteredCards = ZarzadzanieFiszkami.Fiszki // Pobieranie listy fiszek tylko dla wybranego poziomu trudności
+                .Where(f => string.Equals(f.Poziom.Trim(), isEasy ? "łatwy" : "trudny", StringComparison.OrdinalIgnoreCase))
+                .ToList();
 
-            var fiszkiDoNauki = fiszki.Where(f => f.Poziom.ToLower() == (isEasy ? "łatwy" : "trudny")).ToList();
-            if (fiszkiDoNauki.Count == 0)
+            if (filteredCards.Count == 0)
             {
-                Console.WriteLine("Brak fiszek na wybranym poziomie trudności.");
+                Console.WriteLine("Brak fiszek o poziomie " + (isEasy ? "łatwy" : "trudny") + ".");
+                Console.WriteLine("Naciśnij Enter, aby powrócić do menu...");
+                Console.ReadLine();
                 return;
             }
-
-            Console.WriteLine("\nIle fiszek chcesz przećwiczyć?");
-            int liczbaFiszek = int.Parse(Console.ReadLine());
-            if (liczbaFiszek < 1 || liczbaFiszek > fiszkiDoNauki.Count)
+            int total = filteredCards.Count; // Wybór liczby fiszek do przećwiczenia
+            int count;
+            do
             {
-                Console.WriteLine("Nieprawidłowa liczba fiszek.");
-                return;
-            }
+                Console.Write("\nIle fiszek chcesz przećwiczyć? (1 - " + total + "): ");
+            } while (!int.TryParse(Console.ReadLine(), out count) || count < 1 || count > total);
 
-            var random = new Random();
-            var wybraneFiszki = fiszkiDoNauki.OrderBy(x => random.Next()).Take(liczbaFiszek).ToList();
+            Random rnd = new Random();  // Losowe tasowanie tylko z wybranego poziomu trudności
+            List<Fiszka> trainingCards = filteredCards.OrderBy(x => rnd.Next()).Take(count).ToList();
+
             int score = 0;
-
-            foreach (var fiszka in wybraneFiszki)
+            foreach (var card in trainingCards)
             {
                 Console.Clear();
-                string pytanie = fromLang1 ? fiszka.Slowo : fiszka.Tlumaczenia[0]; // Wybór odpowiedniego pytania
-                Console.WriteLine($"Przetłumacz: {pytanie}");
-
-                List<string> poprawneOdpowiedzi = fromLang1 ? fiszka.Tlumaczenia : new List<string> { fiszka.Slowo };
-
+                Console.WriteLine("Przetłumacz: " + card.PobierzPytanie(kierunek));
                 if (isEasy)
                 {
-                    Console.WriteLine($"Podpowiedź: {poprawneOdpowiedzi[0][0]}{new string('_', poprawneOdpowiedzi[0].Length - 1)}");
-                }
+                       // Tryb łatwy – jedna próba + podpowiedź
+                    Console.WriteLine("Podpowiedź: " + card.PobierzPodpowiedz(kierunek));
+                    Console.Write("Podaj tłumaczenie: ");
+                    string answer = Console.ReadLine().Trim().ToLower();
 
-                Console.Write("Twoja odpowiedź: ");
-                string odpowiedz = Console.ReadLine().Trim().ToLower();
-
-                if (poprawneOdpowiedzi.Any(o => o.ToLower() == odpowiedz))
-                {
-                    Console.WriteLine("Dobrze!");
-                    score++;
-                }
+                    if (card.PobierzOdpowiedzi(kierunek).Contains(answer))
+                    {
+                        Console.WriteLine("Dobrze!");
+                        score++;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Niepoprawnie. Poprawne odpowiedzi: " +
+                            string.Join(", ", card.PobierzOdpowiedzi(kierunek)));
+                        Console.Write("Spróbuj ponownie: ");
+                        string secondAttempt = Console.ReadLine().Trim().ToLower();
+                        if (card.PobierzOdpowiedzi(kierunek).Contains(secondAttempt))
+                        {
+                            Console.WriteLine("Dobrze!");
+                            score++;
+                        }
+                        else
+                        {
+                            Console.WriteLine("Źle! Poprawne odpowiedzi: " +
+                                string.Join(", ", card.PobierzOdpowiedzi(kierunek)));
+                        }
+                    } }
                 else
                 {
-                    Console.WriteLine($"Błąd! Poprawna odpowiedź: {string.Join(", ", poprawneOdpowiedzi)}");
-                }
+                    // Tryb trudny – użytkownik musi podać wszystkie tłumaczenia
+                    Console.WriteLine("Podaj wszystkie tłumaczenia, oddzielone przecinkami:");
+                    Console.Write("Tłumaczenia dla '" + card.PobierzPytanie(kierunek) + "': ");
+                    string input = Console.ReadLine();
+                    var userAnswers = input.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                                           .Select(s => s.Trim().ToLower()).ToList();
+                    var correctAnswers = card.PobierzOdpowiedzi(kierunek);
 
-                Console.WriteLine("Naciśnij Enter, aby przejść dalej...");
+                    if (new HashSet<string>(userAnswers).SetEquals(correctAnswers))
+                    {
+                        Console.WriteLine("Dobrze!");
+                        score++;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Źle! Poprawne odpowiedzi: " + string.Join(", ", correctAnswers));
+                    } }
+                Console.WriteLine("\nNaciśnij Enter, aby przejść do następnej fiszki...");
                 Console.ReadLine();
             }
-
-            double procent = (double)score / liczbaFiszek * 100;
             Console.Clear();
-            Console.WriteLine($"Twój wynik: {score}/{liczbaFiszek} ({procent:F0}%)");
+            double percentage = ((double)score / count) * 100;
+            Console.WriteLine("==== KONIEC NAUKI ====");
+            Console.WriteLine("Twój wynik: " + score + "/" + count + " (" + percentage.ToString("F0") + "%)");
+            Console.WriteLine("Naciśnij Enter, aby powrócić do menu...");
+            Console.ReadLine();
         }
     }
 }
